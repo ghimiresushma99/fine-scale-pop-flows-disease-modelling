@@ -1,0 +1,288 @@
+---
+title: "Learning Spanish OD Data with {spanishoddata}"
+author: "Sushma Ghimire"
+format: html
+editor: visual
+---
+
+# Introduction
+
+This notebook documents my learning process while exploring the `spanishoddata` package and the Spanish Origin-Destination (OD) mobility dataset. The objective is to understand how the data are structured and how they can be used in my thesis on fine-scale population flow simulation for infectious disease modelling.
+
+------------------------------------------------------------------------
+
+# 1. Load Required Packages
+
+```{r}
+library(spanishoddata)
+library(tidyverse)
+
+theme_set(theme_minimal())
+sf::sf_use_s2(FALSE)
+```
+
+**Purpose**
+
+- Load the `spanishoddata` package.
+- Load the tidyverse for data manipulation.
+- Disable spherical geometry for compatibility.
+
+------------------------------------------------------------------------
+
+# 2. Create a Data Directory
+
+```{r}
+dir.create("spanish_od_data", showWarnings = FALSE)
+
+spod_set_data_dir(
+  file.path(getwd(), "spanish_od_data")
+)
+```
+
+**Purpose**
+
+Create a folder to store downloaded mobility datasets.
+
+The directory is set to
+
+```         
+<current working directory>/spanish_od_data
+```
+
+------------------------------------------------------------------------
+
+# 3. Retrieve Metadata
+
+```{r}
+metadata <- spod_available_data(ver = 2)
+```
+
+**Purpose**
+
+This downloads the metadata (catalog) of all available mobility datasets.
+
+It **does not download** the mobility data itself.
+
+Metadata contains information such as:
+
+- available dates
+- download links
+- file size
+- spatial level
+- data type
+
+------------------------------------------------------------------------
+
+# 4. Explore Metadata
+
+## Column names
+
+```{r}
+names(metadata)
+```
+
+## Structure
+
+```{r}
+glimpse(metadata)
+```
+
+## View metadata
+
+```{r}
+View(metadata)
+```
+
+------------------------------------------------------------------------
+
+# Understanding the Metadata Columns
+
+| Column          | Description                                       |
+|-----------------|---------------------------------------------------|
+| target_url      | URL where the dataset can be downloaded           |
+| pub_ts          | Publication timestamp                             |
+| file_size_bytes | Size of the file                                  |
+| file_extension  | File format                                       |
+| data_ym         | Year-month represented                            |
+| data_ymd        | Date represented                                  |
+| study           | Study type                                        |
+| type            | Dataset type (origin-destination, metadata, etc.) |
+| period          | Daily, monthly, etc.                              |
+| zones           | Spatial level (districts, municipalities, etc.)   |
+
+------------------------------------------------------------------------
+
+# 5. Download One Day of OD Data
+
+```{r}
+od_db <- spod_get(
+  type = "origin-destination",
+  zones = "districts",
+  dates = "2024-03-01"
+)
+```
+
+**Purpose**
+
+Downloads Origin-Destination mobility data for
+
+- Date: **2024-03-01**
+- Spatial level: **Districts**
+
+The returned object is stored in DuckDB.
+
+------------------------------------------------------------------------
+
+# 6. View the First 20 Rows
+
+```{r}
+od_db |>
+  collect(n = 20)
+```
+
+To print all columns:
+
+```{r}
+print(
+  od_db |> collect(n = 20),
+  n = 20,
+  width = Inf
+)
+```
+
+------------------------------------------------------------------------
+
+# 7. View Data in Spreadsheet Format
+
+```{r}
+od_db |>
+  collect(n = 20) |>
+  View()
+```
+
+------------------------------------------------------------------------
+
+# 8. Explore the Dataset
+
+## Column names
+
+```{r}
+colnames(od_db)
+```
+
+------------------------------------------------------------------------
+
+## Number of records
+
+```{r}
+od_db |>
+  tally() |>
+  collect()
+```
+
+------------------------------------------------------------------------
+
+## Total number of trips
+
+```{r}
+od_db |>
+  summarise(total_trips = sum(n_trips)) |>
+  collect()
+```
+
+------------------------------------------------------------------------
+
+# Understanding the OD Dataset
+
+Each row represents an **aggregated flow of trips**, not an individual person.
+
+Example:
+
+| Variable              | Meaning                  |
+|-----------------------|--------------------------|
+| date                  | Date of travel           |
+| hour                  | Hour of travel           |
+| id_origin             | Origin district          |
+| id_destination        | Destination district     |
+| distance              | Distance category        |
+| activity_origin       | Activity at origin       |
+| activity_destination  | Activity at destination  |
+| age                   | Age group                |
+| sex                   | Sex                      |
+| income                | Income category          |
+| n_trips               | Number of trips          |
+| trips_total_length_km | Total distance travelled |
+
+------------------------------------------------------------------------
+
+# What Does One Row Mean?
+
+Suppose one row contains
+
+- Date = 2024-03-01
+- Hour = 08
+- Origin = District A
+- Destination = District B
+- Age = 25–39
+- Trips = 148
+
+Interpretation:
+
+> Approximately **148 trips** were made between District A and District B during that hour by people in the specified demographic group.
+
+------------------------------------------------------------------------
+
+# Important Notes
+
+This dataset **does not** contain:
+
+- Individual GPS trajectories
+- Personal identifiers
+- Exact travel routes
+
+Instead, it contains **aggregated Origin-Destination flows**.
+
+------------------------------------------------------------------------
+
+# Why Is This Useful?
+
+The OD dataset provides coarse movement patterns between districts.
+
+For my thesis, these coarse flows will eventually be:
+
+```         
+Coarse OD
+        ↓
+Downscaling
+        ↓
+Fine-scale OD
+        ↓
+Agent-Based Model
+        ↓
+Disease Transmission Simulation
+```
+
+------------------------------------------------------------------------
+
+# Commands Learned
+
+| Command                 | Purpose                      |
+|-------------------------|------------------------------|
+| `spod_set_data_dir()`   | Set download directory       |
+| `spod_available_data()` | Retrieve metadata            |
+| `spod_get()`            | Download OD data             |
+| `collect()`             | Load data from DuckDB into R |
+| `View()`                | Open spreadsheet viewer      |
+| `glimpse()`             | Display data structure       |
+| `tally()`               | Count records                |
+| `summarise()`           | Compute summaries            |
+
+------------------------------------------------------------------------
+
+# Next Steps
+
+- Explore the spatial zones.
+- Visualize OD flows.
+- Understand district identifiers.
+- Learn OD disaggregation/downscaling.
+- Connect OD data to an Agent-Based Model.

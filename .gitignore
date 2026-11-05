@@ -109,3 +109,9 @@ $RECYCLE.BIN/
 
 # Jupyter cache folder
 cache/**
+
+# Large raw mobility datasets
+*.csv.gz
+
+# Raw data cache
+**/raw_data_cache/

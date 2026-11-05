@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Sushma Ghimire">
+
+<title>Learning Spanish OD Data with {spanishoddata}</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="OD data preview_files/libs/clipboard/clipboard.min.js"></script>
+<script src="OD data preview_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="OD data preview_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="OD data preview_files/libs/quarto-html/popper.min.js"></script>
+<script src="OD data preview_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="OD data preview_files/libs/quarto-html/anchor.min.js"></script>
+<link href="OD data preview_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="OD data preview_files/libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="OD data preview_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="OD data preview_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="OD data preview_files/libs/bootstrap/bootstrap-efbb37e9afcc02144ebbc7afd12a776f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Learning Spanish OD Data with {spanishoddata}</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Sushma Ghimire </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>This notebook documents my learning process while exploring the <code>spanishoddata</code> package and the Spanish Origin-Destination (OD) mobility dataset. The objective is to understand how the data are structured and how they can be used in my thesis on fine-scale population flow simulation for infectious disease modelling.</p>
+<hr>
+</section>
+<section id="load-required-packages" class="level1">
+<h1>1. Load Required Packages</h1>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(spanishoddata)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.2.1     ✔ readr     2.2.0
+✔ forcats   1.0.1     ✔ stringr   1.6.0
+✔ ggplot2   4.0.3     ✔ tibble    3.3.1
+✔ lubridate 1.9.5     ✔ tidyr     1.3.2
+✔ purrr     1.2.2     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">theme_set</span>(<span class="fu">theme_minimal</span>())</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>sf<span class="sc">::</span><span class="fu">sf_use_s2</span>(<span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Spherical geometry (s2) switched off</code></pre>
+</div>
+</div>
+<p><strong>Purpose</strong></p>
+<ul>
+<li>Load the <code>spanishoddata</code> package.</li>
+<li>Load the tidyverse for data manipulation.</li>
+<li>Disable spherical geometry for compatibility.</li>
+</ul>
+<hr>
+</section>
+<section id="create-a-data-directory" class="level1">
+<h1>2. Create a Data Directory</h1>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">"spanish_od_data"</span>, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">spod_set_data_dir</span>(</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.path</span>(<span class="fu">getwd</span>(), <span class="st">"spanish_od_data"</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Data directory is writeable.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Data directory successfully set to: D:/Thesis/R files/spanish_od_data</code></pre>
+</div>
+</div>
+<p><strong>Purpose</strong></p>
+<p>Create a folder to store downloaded mobility datasets.</p>
+<p>The directory is set to</p>
+<pre><code>&lt;current working directory&gt;/spanish_od_data</code></pre>
+<hr>
+</section>
+<section id="retrieve-metadata" class="level1">
+<h1>3. Retrieve Metadata</h1>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>metadata <span class="ot">&lt;-</span> <span class="fu">spod_available_data</span>(<span class="at">ver =</span> <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Using existing disk cache: D:/Thesis/R files/spanish_od_data/metadata_cache/metadata_s3_v2_2026-07-01.rds</code></pre>
+</div>
+</div>
+<p><strong>Purpose</strong></p>
+<p>This downloads the metadata (catalog) of all available mobility datasets.</p>
+<p>It <strong>does not download</strong> the mobility data itself.</p>
+<p>Metadata contains information such as:</p>
+<ul>
+<li>available dates</li>
+<li>download links</li>
+<li>file size</li>
+<li>spatial level</li>
+<li>data type</li>
+</ul>
+<hr>
+</section>
+<section id="explore-metadata" class="level1">
+<h1>4. Explore Metadata</h1>
+<section id="column-names" class="level2">
+<h2 class="anchored" data-anchor-id="column-names">Column names</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(metadata)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "target_url"          "pub_ts"              "file_size_bytes"    
+ [4] "etag"                "file_extension"      "data_ym"            
+ [7] "data_ymd"            "local_path"          "study"              
+[10] "type"                "period"              "zones"              
+[13] "remote_file_size_mb"</code></pre>
+</div>
+</div>
+</section>
+<section id="structure" class="level2">
+<h2 class="anchored" data-anchor-id="structure">Structure</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(metadata)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 14,350
+Columns: 13
+$ target_url          &lt;chr&gt; "https://movilidad-opendata.mitma.es/RSS.xml", "ht…
+$ pub_ts              &lt;dttm&gt; 2026-02-23 16:10:10, 2026-02-23 16:09:55, 2026-02…
+$ file_size_bytes     &lt;dbl&gt; 7128694, 165024, 165024, 327782400, 7249920, 24573…
+$ etag                &lt;chr&gt; "a818ae4f9a54f53ed3ec10d52837df6e-2", "bd419607e78…
+$ file_extension      &lt;chr&gt; "xml", "pdf", "pdf", "tar", "tar", "tar", "tar", "…
+$ data_ym             &lt;date&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+$ data_ymd            &lt;date&gt; NA, 2025-07-01, 2025-07-01, NA, NA, NA, NA, NA, N…
+$ local_path          &lt;chr&gt; "D:/Thesis/R files/spanish_od_data/raw_data_cache/…
+$ study               &lt;fct&gt; NA, basic, NA, basic, basic, basic, basic, basic, …
+$ type                &lt;fct&gt; metadata, NA, NA, origin-destination, overnight_st…
+$ period              &lt;fct&gt; NA, NA, NA, month, month, month, month, month, mon…
+$ zones               &lt;fct&gt; NA, NA, NA, districts, districts, municipalities, …
+$ remote_file_size_mb &lt;dbl&gt; 6.80, 0.16, 0.16, 312.60, 6.91, 234.36, 5.55, 159.…</code></pre>
+</div>
+</div>
+</section>
+<section id="view-metadata" class="level2">
+<h2 class="anchored" data-anchor-id="view-metadata">View metadata</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">View</span>(metadata)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<hr>
+</section>
+</section>
+<section id="understanding-the-metadata-columns" class="level1">
+<h1>Understanding the Metadata Columns</h1>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Column</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>target_url</td>
+<td>URL where the dataset can be downloaded</td>
+</tr>
+<tr class="even">
+<td>pub_ts</td>
+<td>Publication timestamp</td>
+</tr>
+<tr class="odd">
+<td>file_size_bytes</td>
+<td>Size of the file</td>
+</tr>
+<tr class="even">
+<td>file_extension</td>
+<td>File format</td>
+</tr>
+<tr class="odd">
+<td>data_ym</td>
+<td>Year-month represented</td>
+</tr>
+<tr class="even">
+<td>data_ymd</td>
+<td>Date represented</td>
+</tr>
+<tr class="odd">
+<td>study</td>
+<td>Study type</td>
+</tr>
+<tr class="even">
+<td>type</td>
+<td>Dataset type (origin-destination, metadata, etc.)</td>
+</tr>
+<tr class="odd">
+<td>period</td>
+<td>Daily, monthly, etc.</td>
+</tr>
+<tr class="even">
+<td>zones</td>
+<td>Spatial level (districts, municipalities, etc.)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+<section id="download-one-day-of-od-data" class="level1">
+<h1>5. Download One Day of OD Data</h1>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>od_db <span class="ot">&lt;-</span> <span class="fu">spod_get</span>(</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="st">"origin-destination"</span>,</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">zones =</span> <span class="st">"districts"</span>,</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">dates =</span> <span class="st">"2024-03-01"</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Data version detected from dates: 2</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Using existing disk cache: D:/Thesis/R files/spanish_od_data/metadata_cache/metadata_s3_v2_2026-07-01.rds</code></pre>
+</div>
+</div>
+<p><strong>Purpose</strong></p>
+<p>Downloads Origin-Destination mobility data for</p>
+<ul>
+<li>Date: <strong>2024-03-01</strong></li>
+<li>Spatial level: <strong>Districts</strong></li>
+</ul>
+<p>The returned object is stored in DuckDB.</p>
+<hr>
+</section>
+<section id="view-the-first-20-rows" class="level1">
+<h1>6. View the First 20 Rows</h1>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>od_db <span class="sc">|&gt;</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect</span>(<span class="at">n =</span> <span class="dv">20</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 20 × 19
+   date        hour id_origin id_destination distance activity_origin  
+   &lt;date&gt;     &lt;int&gt; &lt;fct&gt;     &lt;fct&gt;          &lt;fct&gt;    &lt;fct&gt;            
+ 1 2024-03-01    19 01009_AM  01001          0.5-2    frequent_activity
+ 2 2024-03-01    15 01002     01001          10-50    frequent_activity
+ 3 2024-03-01     0 01009_AM  01001          10-50    frequent_activity
+ 4 2024-03-01     5 01009_AM  01001          10-50    frequent_activity
+ 5 2024-03-01     6 01009_AM  01001          10-50    frequent_activity
+ 6 2024-03-01     9 01009_AM  01001          10-50    frequent_activity
+ 7 2024-03-01    12 01009_AM  01001          10-50    frequent_activity
+ 8 2024-03-01    14 01009_AM  01001          10-50    frequent_activity
+ 9 2024-03-01    15 01009_AM  01001          10-50    frequent_activity
+10 2024-03-01    18 01009_AM  01001          10-50    frequent_activity
+11 2024-03-01    19 01009_AM  01001          10-50    frequent_activity
+12 2024-03-01    22 01009_AM  01001          10-50    frequent_activity
+13 2024-03-01    23 01009_AM  01001          10-50    frequent_activity
+14 2024-03-01    14 01017_AM  01001          10-50    frequent_activity
+15 2024-03-01    20 01047_AM  01001          10-50    frequent_activity
+16 2024-03-01     0 01051     01001          10-50    frequent_activity
+17 2024-03-01     6 01051     01001          10-50    frequent_activity
+18 2024-03-01    15 01051     01001          10-50    frequent_activity
+19 2024-03-01    21 01051     01001          10-50    frequent_activity
+20 2024-03-01     1 01058_AM  01001          10-50    frequent_activity
+# ℹ 13 more variables: activity_destination &lt;fct&gt;, study_possible_origin &lt;lgl&gt;,
+#   study_possible_destination &lt;lgl&gt;, residence_province_ine_code &lt;fct&gt;,
+#   residence_province_name &lt;fct&gt;, income &lt;fct&gt;, age &lt;fct&gt;, sex &lt;fct&gt;,
+#   n_trips &lt;dbl&gt;, trips_total_length_km &lt;dbl&gt;, year &lt;int&gt;, month &lt;int&gt;,
+#   day &lt;int&gt;</code></pre>
+</div>
+</div>
+<p>To print all columns:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  od_db <span class="sc">|&gt;</span> <span class="fu">collect</span>(<span class="at">n =</span> <span class="dv">20</span>),</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">n =</span> <span class="dv">20</span>,</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">width =</span> <span class="cn">Inf</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 20 × 19
+   date        hour id_origin id_destination distance activity_origin  
+   &lt;date&gt;     &lt;int&gt; &lt;fct&gt;     &lt;fct&gt;          &lt;fct&gt;    &lt;fct&gt;            
+ 1 2024-03-01    19 01009_AM  01001          0.5-2    frequent_activity
+ 2 2024-03-01    15 01002     01001          10-50    frequent_activity
+ 3 2024-03-01     0 01009_AM  01001          10-50    frequent_activity
+ 4 2024-03-01     5 01009_AM  01001          10-50    frequent_activity
+ 5 2024-03-01     6 01009_AM  01001          10-50    frequent_activity
+ 6 2024-03-01     9 01009_AM  01001          10-50    frequent_activity
+ 7 2024-03-01    12 01009_AM  01001          10-50    frequent_activity
+ 8 2024-03-01    14 01009_AM  01001          10-50    frequent_activity
+ 9 2024-03-01    15 01009_AM  01001          10-50    frequent_activity
+10 2024-03-01    18 01009_AM  01001          10-50    frequent_activity
+11 2024-03-01    19 01009_AM  01001          10-50    frequent_activity
+12 2024-03-01    22 01009_AM  01001          10-50    frequent_activity
+13 2024-03-01    23 01009_AM  01001          10-50    frequent_activity
+14 2024-03-01    14 01017_AM  01001          10-50    frequent_activity
+15 2024-03-01    20 01047_AM  01001          10-50    frequent_activity
+16 2024-03-01     0 01051     01001          10-50    frequent_activity
+17 2024-03-01     6 01051     01001          10-50    frequent_activity
+18 2024-03-01    15 01051     01001          10-50    frequent_activity
+19 2024-03-01    21 01051     01001          10-50    frequent_activity
+20 2024-03-01     1 01058_AM  01001          10-50    frequent_activity
+   activity_destination study_possible_origin study_possible_destination
+   &lt;fct&gt;                &lt;lgl&gt;                 &lt;lgl&gt;                     
+ 1 home                 FALSE                 FALSE                     
+ 2 home                 FALSE                 FALSE                     
+ 3 home                 FALSE                 FALSE                     
+ 4 home                 FALSE                 FALSE                     
+ 5 home                 FALSE                 FALSE                     
+ 6 home                 FALSE                 FALSE                     
+ 7 home                 FALSE                 FALSE                     
+ 8 home                 FALSE                 FALSE                     
+ 9 home                 FALSE                 FALSE                     
+10 home                 FALSE                 FALSE                     
+11 home                 FALSE                 FALSE                     
+12 home                 FALSE                 FALSE                     
+13 home                 FALSE                 FALSE                     
+14 home                 FALSE                 FALSE                     
+15 home                 FALSE                 FALSE                     
+16 home                 FALSE                 FALSE                     
+17 home                 FALSE                 FALSE                     
+18 home                 FALSE                 FALSE                     
+19 home                 FALSE                 FALSE                     
+20 home                 FALSE                 FALSE                     
+   residence_province_ine_code residence_province_name income age   sex  
+   &lt;fct&gt;                       &lt;fct&gt;                   &lt;fct&gt;  &lt;fct&gt; &lt;fct&gt;
+ 1 01                          Araba/Álava             10-15  &lt;NA&gt;  &lt;NA&gt; 
+ 2 01                          Araba/Álava             10-15  &lt;NA&gt;  &lt;NA&gt; 
+ 3 01                          Araba/Álava             10-15  &lt;NA&gt;  &lt;NA&gt; 
+ 4 01                          Araba/Álava             10-15  &lt;NA&gt;  &lt;NA&gt; 
+ 5 01                          Araba/Álava             10-15  &lt;NA&gt;  &lt;NA&gt; 
+ 6 01                          Araba/Álava             10-15  &lt;NA&gt;  &lt;NA&gt; 
+ 7 01                          Araba/Álava             10-15  &lt;NA&gt;  &lt;NA&gt; 
+ 8 01                          Araba/Álava             10-15  &lt;NA&gt;  &lt;NA&gt; 
+ 9 01                          Araba/Álava             10-15  &lt;NA&gt;  &lt;NA&gt; 
+10 01                          Araba/Álava             10-15  &lt;NA&gt;  &lt;NA&gt; 
+11 01                          Araba/Álava             10-15  &lt;NA&gt;  &lt;NA&gt; 
+12 01                          Araba/Álava             10-15  &lt;NA&gt;  &lt;NA&gt; 
+13 01                          Araba/Álava             10-15  &lt;NA&gt;  &lt;NA&gt; 
+14 01                          Araba/Álava             10-15  &lt;NA&gt;  &lt;NA&gt; 
+15 01                          Araba/Álava             10-15  &lt;NA&gt;  &lt;NA&gt; 
+16 01                          Araba/Álava             10-15  &lt;NA&gt;  &lt;NA&gt; 
+17 01                          Araba/Álava             10-15  &lt;NA&gt;  &lt;NA&gt; 
+18 01                          Araba/Álava             10-15  &lt;NA&gt;  &lt;NA&gt; 
+19 01                          Araba/Álava             10-15  &lt;NA&gt;  &lt;NA&gt; 
+20 01                          Araba/Álava             10-15  &lt;NA&gt;  &lt;NA&gt; 
+   n_trips trips_total_length_km  year month   day
+     &lt;dbl&gt;                 &lt;dbl&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
+ 1    5.12                  6.12  2024     3     1
+ 2    2.36                100.    2024     3     1
+ 3    1.74                 22.3   2024     3     1
+ 4    2.40                 24.7   2024     3     1
+ 5    5.12                 80.1   2024     3     1
+ 6    7.02                 93.9   2024     3     1
+ 7    4.66                 53.9   2024     3     1
+ 8    2.40                 36.1   2024     3     1
+ 9    4.15                 47.0   2024     3     1
+10    4.66                 53.9   2024     3     1
+11    3                    32.5   2024     3     1
+12    1.74                 19.9   2024     3     1
+13    2.40                 24.7   2024     3     1
+14    2.40                 43.5   2024     3     1
+15    2.36                 78.8   2024     3     1
+16    2.32                 23.7   2024     3     1
+17    1.74                 18.4   2024     3     1
+18    3                    31.2   2024     3     1
+19    4.66                 55.9   2024     3     1
+20    2.40                 27.6   2024     3     1</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="view-data-in-spreadsheet-format" class="level1">
+<h1>7. View Data in Spreadsheet Format</h1>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>od_db <span class="sc">|&gt;</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect</span>(<span class="at">n =</span> <span class="dv">20</span>) <span class="sc">|&gt;</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">View</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<hr>
+</section>
+<section id="explore-the-dataset" class="level1">
+<h1>8. Explore the Dataset</h1>
+<section id="column-names-1" class="level2">
+<h2 class="anchored" data-anchor-id="column-names-1">Column names</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(od_db)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "date"                        "hour"                       
+ [3] "id_origin"                   "id_destination"             
+ [5] "distance"                    "activity_origin"            
+ [7] "activity_destination"        "study_possible_origin"      
+ [9] "study_possible_destination"  "residence_province_ine_code"
+[11] "residence_province_name"     "income"                     
+[13] "age"                         "sex"                        
+[15] "n_trips"                     "trips_total_length_km"      
+[17] "year"                        "month"                      
+[19] "day"                        </code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="number-of-records" class="level2">
+<h2 class="anchored" data-anchor-id="number-of-records">Number of records</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>od_db <span class="sc">|&gt;</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tally</span>() <span class="sc">|&gt;</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 1
+         n
+     &lt;dbl&gt;
+1 21072185</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="total-number-of-trips" class="level2">
+<h2 class="anchored" data-anchor-id="total-number-of-trips">Total number of trips</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>od_db <span class="sc">|&gt;</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">total_trips =</span> <span class="fu">sum</span>(n_trips)) <span class="sc">|&gt;</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Missing values are always removed in SQL aggregation functions.
+Use `na.rm = TRUE` to silence this warning
+This warning is displayed once every 8 hours.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 1
+  total_trips
+        &lt;dbl&gt;
+1  142998108.</code></pre>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="understanding-the-od-dataset" class="level1">
+<h1>Understanding the OD Dataset</h1>
+<p>Each row represents an <strong>aggregated flow of trips</strong>, not an individual person.</p>
+<p>Example:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>date</td>
+<td>Date of travel</td>
+</tr>
+<tr class="even">
+<td>hour</td>
+<td>Hour of travel</td>
+</tr>
+<tr class="odd">
+<td>id_origin</td>
+<td>Origin district</td>
+</tr>
+<tr class="even">
+<td>id_destination</td>
+<td>Destination district</td>
+</tr>
+<tr class="odd">
+<td>distance</td>
+<td>Distance category</td>
+</tr>
+<tr class="even">
+<td>activity_origin</td>
+<td>Activity at origin</td>
+</tr>
+<tr class="odd">
+<td>activity_destination</td>
+<td>Activity at destination</td>
+</tr>
+<tr class="even">
+<td>age</td>
+<td>Age group</td>
+</tr>
+<tr class="odd">
+<td>sex</td>
+<td>Sex</td>
+</tr>
+<tr class="even">
+<td>income</td>
+<td>Income category</td>
+</tr>
+<tr class="odd">
+<td>n_trips</td>
+<td>Number of trips</td>
+</tr>
+<tr class="even">
+<td>trips_total_length_km</td>
+<td>Total distance travelled</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+<section id="what-does-one-row-mean" class="level1">
+<h1>What Does One Row Mean?</h1>
+<p>Suppose one row contains</p>
+<ul>
+<li>Date = 2024-03-01</li>
+<li>Hour = 08</li>
+<li>Origin = District A</li>
+<li>Destination = District B</li>
+<li>Age = 25–39</li>
+<li>Trips = 148</li>
+</ul>
+<p>Interpretation:</p>
+<blockquote class="blockquote">
+<p>Approximately <strong>148 trips</strong> were made between District A and District B during that hour by people in the specified demographic group.</p>
+</blockquote>
+<hr>
+</section>
+<section id="important-notes" class="level1">
+<h1>Important Notes</h1>
+<p>This dataset <strong>does not</strong> contain:</p>
+<ul>
+<li>Individual GPS trajectories</li>
+<li>Personal identifiers</li>
+<li>Exact travel routes</li>
+</ul>
+<p>Instead, it contains <strong>aggregated Origin-Destination flows</strong>.</p>
+<hr>
+</section>
+<section id="why-is-this-useful" class="level1">
+<h1>Why Is This Useful?</h1>
+<p>The OD dataset provides coarse movement patterns between districts.</p>
+<p>For my thesis, these coarse flows will eventually be:</p>
+<pre><code>Coarse OD
+        ↓
+Downscaling
+        ↓
+Fine-scale OD
+        ↓
+Agent-Based Model
+        ↓
+Disease Transmission Simulation</code></pre>
+<hr>
+</section>
+<section id="commands-learned" class="level1">
+<h1>Commands Learned</h1>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Command</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>spod_set_data_dir()</code></td>
+<td>Set download directory</td>
+</tr>
+<tr class="even">
+<td><code>spod_available_data()</code></td>
+<td>Retrieve metadata</td>
+</tr>
+<tr class="odd">
+<td><code>spod_get()</code></td>
+<td>Download OD data</td>
+</tr>
+<tr class="even">
+<td><code>collect()</code></td>
+<td>Load data from DuckDB into R</td>
+</tr>
+<tr class="odd">
+<td><code>View()</code></td>
+<td>Open spreadsheet viewer</td>
+</tr>
+<tr class="even">
+<td><code>glimpse()</code></td>
+<td>Display data structure</td>
+</tr>
+<tr class="odd">
+<td><code>tally()</code></td>
+<td>Count records</td>
+</tr>
+<tr class="even">
+<td><code>summarise()</code></td>
+<td>Compute summaries</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+<section id="next-steps" class="level1">
+<h1>Next Steps</h1>
+<ul>
+<li>Explore the spatial zones.</li>
+<li>Visualize OD flows.</li>
+<li>Understand district identifiers.</li>
+<li>Learn OD disaggregation/downscaling.</li>
+<li>Connect OD data to an Agent-Based Model.</li>
+</ul>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
